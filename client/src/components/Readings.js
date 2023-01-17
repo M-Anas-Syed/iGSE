@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import {
     MDBContainer,
     MDBBtn,
@@ -37,7 +37,6 @@ function Readings() {
         <div>
             <MDBContainer className="p-3 my-5 d-flex flex-column w-50">
                 <form>
-                    <h3>Submit new meter readings</h3>
                     <MDBInput wrapperClass='mb-4' label='Submission date' type='date' value={subDate} onChange={onSubDate} required/>
                     <MDBInput wrapperClass='mb-4' label='Electricity Day Reading (kWh)' type='number' onChange={(e) => {setDayReading(e.target.value);}} required/>
                     <MDBInput wrapperClass='mb-4' label='Electricity Night Reading (kWh)' type='number' onChange={(e) => {setNightReading(e.target.value);}} required/>

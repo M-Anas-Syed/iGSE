@@ -115,16 +115,18 @@ app.post("/readings", (req,res) => {
 //bills
 app.get("/bill", (req,res) => {
     if(req.session.user){
-        console.log("entered");
-        connection.query("SELECT * FROM Reading WHERE status = 'pending' ORDER BY reading_id DESC LIMIT 2",
+        // console.log("entered");
+        const cus_id = req.session.user[0]['customer_id'];
+        connection.query("SELECT * FROM igse_database.Reading WHERE customer_id = ? ORDER BY submission_date DESC LIMIT 2;",
+        [cus_id],
         (err, result) => {
             if(err){
                 res.send({err: err});
             }
             
-            if(result.length > 0){
+            if(result.length > 1){
                 res.send({billExists: true, newbill: result[0], oldbill:result[1]});
-                console.log(result[0]);
+                // console.log(result[0]);
             }
             else{
                 res.send({billExists: false});
@@ -148,6 +150,43 @@ app.get("/tariff", (req,res) => {
             }
         })
     }
+});
+
+//get vouchers
+app.get("/topup", (req,res) => {
+    if(req.session.user){
+        connection.query("SELECT * FROM igse_database.Voucher WHERE used = 0",
+        (err, result) => {
+            if(err){
+                res.send({err: err});
+            }
+            if(result.length > 0){
+                res.send({allVouchers: result, user: req.session.user});
+                // console.log(req.session.user);
+            }
+        })
+    }
+});
+
+// post topup
+app.post("/topup", (req,res) => {
+
+    const blanc = req.body.total_balance;
+    const custid = req.session.user[0]['customer_id'];
+    const vouch = req.body.voucher_num;
+    console.log(blanc);
+    console.log(custid);
+    
+    connection.query("UPDATE igse_database.Customer SET balance = ? WHERE customer_id = ?;UPDATE igse_database.Voucher SET used = 1 WHERE EVC_code = ?;",
+    [blanc, custid, vouch],
+    (err, result) =>{
+        if(err){
+            res.send({err: err});
+        }
+        console.log(result);
+        res.send(result);
+    }
+    )
 });
 
 // Connecting to database
